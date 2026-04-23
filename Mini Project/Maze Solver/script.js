@@ -1,17 +1,12 @@
-/* ============================================
-   MAZE SOLVER VISUALIZER — SCRIPT
-   DFS & BFS pathfinding with animation
-   ============================================ */
 
-// ─── State ───────────────────────────────────
 const state = {
     rows: 25,
     cols: 25,
-    grid: [],           // 2D array: 0=empty, 1=wall, 2=start, 3=end
-    start: null,        // {row, col}
-    end: null,          // {row, col}
+    grid: [],           
+    start: null,        
+    end: null,          
     isDrawing: false,
-    drawMode: null,     // 'wall' | 'erase' | 'moveStart' | 'moveEnd'
+    drawMode: null,     
     isSolving: false,
     isSolved: false,
     speed: 80,
@@ -19,7 +14,6 @@ const state = {
     startTime: 0,
 };
 
-// ─── DOM References ──────────────────────────
 const gridEl = document.getElementById('grid');
 const btnSolve = document.getElementById('btn-solve');
 const btnReset = document.getElementById('btn-reset');
@@ -35,7 +29,6 @@ const timeTaken = document.getElementById('time-taken');
 const statusText = document.getElementById('status-text');
 const noPathMsg = document.getElementById('no-path-msg');
 
-// ─── Initialization ─────────────────────────
 function init() {
     buildGrid();
     attachEventListeners();
@@ -325,8 +318,6 @@ async function solveMaze() {
     state.isSolved = true;
     setUILocked(false);
 }
-
-// ─── DFS Algorithm ───────────────────────────
 async function solveDFS() {
     const { rows, cols, start, end, grid } = state;
     const visited = Array.from({ length: rows }, () => Array(cols).fill(false));
@@ -356,7 +347,6 @@ async function solveDFS() {
 
         await sleep(state.speed);
 
-        // Shuffle directions for more interesting paths
         const shuffled = [...directions].sort(() => Math.random() - 0.5);
 
         for (const [dr, dc] of shuffled) {
@@ -373,12 +363,9 @@ async function solveDFS() {
     }
 
     if (!found) return null;
-
-    // Reconstruct path
     return reconstructPath(parent, start, end);
 }
 
-// ─── BFS Algorithm ───────────────────────────
 async function solveBFS() {
     const { rows, cols, start, end, grid } = state;
     const visited = Array.from({ length: rows }, () => Array(cols).fill(false));
@@ -394,8 +381,6 @@ async function solveBFS() {
 
         state.stepCount++;
         stepsCount.textContent = state.stepCount;
-
-        // Visualize visited
         if (!(row === start.row && col === start.col) &&
             !(row === end.row && col === end.col)) {
             getCellEl(row, col).classList.add('visited');
@@ -426,7 +411,6 @@ async function solveBFS() {
     return reconstructPath(parent, start, end);
 }
 
-// ─── Path Reconstruction ─────────────────────
 function reconstructPath(parent, start, end) {
     const path = [];
     let curr = end;
@@ -441,7 +425,6 @@ function reconstructPath(parent, start, end) {
     return path.reverse();
 }
 
-// ─── Path Animation ──────────────────────────
 async function animatePath(path) {
     for (let i = 0; i < path.length; i++) {
         const { row, col } = path[i];
@@ -454,7 +437,6 @@ async function animatePath(path) {
     }
 }
 
-// ─── Maze Generation (Recursive Backtracker) ─
 async function generateMaze() {
     if (state.isSolving) return;
 
@@ -475,11 +457,9 @@ async function generateMaze() {
         }
     }
 
-    // Recursive backtracker on odd-indexed cells
     const visited = Array.from({ length: rows }, () => Array(cols).fill(false));
     const directions = [[-2, 0], [2, 0], [0, -2], [0, 2]];
 
-    // Start carving from (1,1)
     const startR = 1;
     const startC = 1;
 
@@ -492,7 +472,6 @@ async function generateMaze() {
         getCellEl(r, c).classList.remove('wall');
     }
 
-    // Iterative DFS for maze generation to avoid stack overflow
     const stack = [{ row: startR, col: startC }];
     visited[startR][startC] = true;
     carve(startR, startC);
@@ -501,7 +480,7 @@ async function generateMaze() {
         const current = stack[stack.length - 1];
         const { row, col } = current;
 
-        // Find unvisited neighbors
+       
         const neighbors = [];
         for (const [dr, dc] of directions) {
             const nr = row + dr;
@@ -516,18 +495,14 @@ async function generateMaze() {
             continue;
         }
 
-        // Pick random neighbor
         const next = neighbors[Math.floor(Math.random() * neighbors.length)];
         visited[next.row][next.col] = true;
-
-        // Carve passage
+       
         carve(next.wallRow, next.wallCol);
         carve(next.row, next.col);
 
         stack.push({ row: next.row, col: next.col });
     }
-
-    // Ensure start and end are on open cells
     ensureNodeAccessible('start');
     ensureNodeAccessible('end');
 
@@ -538,13 +513,12 @@ async function generateMaze() {
 
 function ensureNodeAccessible(type) {
     const node = state[type];
-    // Clear the node cell and adjacent cells
     state.grid[node.row][node.col] = type === 'start' ? 2 : 3;
     getCellEl(node.row, node.col).classList.remove('wall');
 
     const { rows, cols } = state;
     const dirs = [[-1, 0], [1, 0], [0, -1], [0, 1]];
-    // Ensure at least one adjacent cell is open
+
     let hasOpen = false;
     for (const [dr, dc] of dirs) {
         const nr = node.row + dr;
@@ -555,7 +529,7 @@ function ensureNodeAccessible(type) {
         }
     }
     if (!hasOpen) {
-        // Open a random adjacent cell
+        
         const valid = dirs.filter(([dr, dc]) => {
             const nr = node.row + dr;
             const nc = node.col + dc;
@@ -571,7 +545,6 @@ function ensureNodeAccessible(type) {
     }
 }
 
-// ─── Clear & Reset ───────────────────────────
 function clearVisualization() {
     const { rows, cols } = state;
     for (let r = 0; r < rows; r++) {
@@ -597,7 +570,6 @@ function resetStats() {
     state.stepCount = 0;
 }
 
-// ─── UI Helpers ──────────────────────────────
 function setUILocked(locked) {
     btnSolve.disabled = locked;
     btnReset.disabled = locked;
