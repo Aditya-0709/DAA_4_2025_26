@@ -1,6 +1,0 @@
-1 A 9
-2 B 5
-3 C 1
-4 D 2
-#DEPENDENCIES
-3 4
