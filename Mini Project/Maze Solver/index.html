@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maze Solver Visualizer</title>
+    <meta name="description" content="Interactive Maze Solver Visualizer demonstrating DFS and BFS pathfinding algorithms with smooth animations.">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="bg-effects">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+
+    <div class="container">
+        <header>
+            <div class="logo-icon">
+                <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+                    <rect x="2" y="2" width="12" height="12" rx="2" stroke="url(#g1)" stroke-width="2.5"/>
+                    <rect x="22" y="2" width="12" height="12" rx="2" stroke="url(#g1)" stroke-width="2.5"/>
+                    <rect x="2" y="22" width="12" height="12" rx="2" stroke="url(#g1)" stroke-width="2.5"/>
+                    <rect x="22" y="22" width="12" height="12" rx="2" stroke="url(#g1)" stroke-width="2.5"/>
+                    <line x1="14" y1="8" x2="22" y2="8" stroke="url(#g1)" stroke-width="2.5" stroke-linecap="round"/>
+                    <line x1="8" y1="14" x2="8" y2="22" stroke="url(#g1)" stroke-width="2.5" stroke-linecap="round"/>
+                    <line x1="28" y1="14" x2="28" y2="22" stroke="url(#g1)" stroke-width="2.5" stroke-linecap="round"/>
+                    <line x1="14" y1="28" x2="22" y2="28" stroke="url(#g1)" stroke-width="2.5" stroke-linecap="round"/>
+                    <defs>
+                        <linearGradient id="g1" x1="0" y1="0" x2="36" y2="36">
+                            <stop stop-color="#a78bfa"/>
+                            <stop offset="1" stop-color="#38bdf8"/>
+                        </linearGradient>
+                    </defs>
+                </svg>
+            </div>
+            <h1>Maze Solver <span class="gradient-text">Visualizer</span></h1>
+            <p class="subtitle">Interactive Algorithm Demonstration &mdash; DFS & BFS Pathfinding</p>
+        </header>
+
+        <div class="main-content">
+            <aside class="control-panel">
+                <div class="panel-title">Controls</div>
+
+                <div class="control-group">
+                    <label for="algorithm">Algorithm</label>
+                    <select id="algorithm">
+                        <option value="dfs">Depth First Search (DFS)</option>
+                        <option value="bfs">Breadth First Search (BFS)</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <label for="speed">Speed: <span id="speed-value">Medium</span></label>
+                    <input type="range" id="speed" min="5" max="200" value="80" dir="rtl">
+                </div>
+
+                <div class="control-group">
+                    <label for="grid-size">Grid Size: <span id="grid-size-value">25 × 25</span></label>
+                    <input type="range" id="grid-size" min="10" max="40" value="25">
+                </div>
+
+                <div class="control-group button-group">
+                    <button id="btn-generate" class="btn btn-secondary">
+                        <span class="btn-icon">⚡</span> Generate Maze
+                    </button>
+                    <button id="btn-reset" class="btn btn-danger">
+                        <span class="btn-icon">🗑️</span> Reset Grid
+                    </button>
+                    <button id="btn-solve" class="btn btn-primary">
+                        <span class="btn-icon">▶</span> Solve Maze
+                    </button>
+                </div>
+
+                <div class="stats-panel">
+                    <div class="panel-title">Statistics</div>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <span class="stat-label">Steps</span>
+                            <span class="stat-value" id="steps-count">0</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-label">Path Length</span>
+                            <span class="stat-value" id="path-length">0</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-label">Time</span>
+                            <span class="stat-value" id="time-taken">0 ms</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-label">Status</span>
+                            <span class="stat-value status-idle" id="status-text">Idle</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="legend">
+                    <div class="panel-title">Legend</div>
+                    <div class="legend-grid">
+                        <div class="legend-item"><div class="cell-demo start"></div> Start</div>
+                        <div class="legend-item"><div class="cell-demo end"></div> End</div>
+                        <div class="legend-item"><div class="cell-demo wall"></div> Wall</div>
+                        <div class="legend-item"><div class="cell-demo empty"></div> Empty</div>
+                        <div class="legend-item"><div class="cell-demo visited"></div> Visited</div>
+                        <div class="legend-item"><div class="cell-demo path"></div> Path</div>
+                    </div>
+                </div>
+
+                <div class="help-text">
+                    <p>💡 <b>Click & drag</b> to draw walls</p>
+                    <p>🔄 <b>Drag</b> Start / End nodes to reposition</p>
+                    <p>🖱️ <b>Right-click</b> to erase walls</p>
+                </div>
+            </aside>
+
+            <section class="grid-section">
+                <div id="grid" class="grid"></div>
+                <div id="no-path-msg" class="no-path-msg hidden">No path found!</div>
+            </section>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
