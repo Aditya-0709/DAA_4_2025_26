@@ -1,4 +1,3 @@
-
 const state = {
     rows: 25,
     cols: 25,
@@ -34,14 +33,10 @@ function init() {
     attachEventListeners();
     updateSpeedLabel();
 }
-
-// ─── Grid Construction ───────────────────────
 function buildGrid() {
     const { rows, cols } = state;
     state.grid = [];
     gridEl.innerHTML = '';
-
-    // Calculate cell size to fit the available space
     const maxSize = Math.min(600, window.innerWidth - 400);
     const cellSize = Math.max(12, Math.floor(maxSize / cols));
 
@@ -60,8 +55,6 @@ function buildGrid() {
             gridEl.appendChild(cell);
         }
     }
-
-    // Set default start & end positions
     const startRow = Math.floor(rows / 2);
     const startCol = 2;
     const endRow = Math.floor(rows / 2);
@@ -83,31 +76,25 @@ function getCellEl(r, c) {
     return document.getElementById(`cell-${r}-${c}`);
 }
 
-// ─── Event Listeners ─────────────────────────
 function attachEventListeners() {
-    // Grid mouse interactions
     gridEl.addEventListener('mousedown', onMouseDown);
     gridEl.addEventListener('mousemove', onMouseMove);
     document.addEventListener('mouseup', onMouseUp);
     gridEl.addEventListener('contextmenu', e => e.preventDefault());
 
-    // Touch support
     gridEl.addEventListener('touchstart', onTouchStart, { passive: false });
     gridEl.addEventListener('touchmove', onTouchMove, { passive: false });
     gridEl.addEventListener('touchend', onTouchEnd);
 
-    // Buttons
     btnSolve.addEventListener('click', solveMaze);
     btnReset.addEventListener('click', resetGrid);
     btnGenerate.addEventListener('click', generateMaze);
 
-    // Speed slider
     speedSlider.addEventListener('input', () => {
         state.speed = parseInt(speedSlider.value);
         updateSpeedLabel();
     });
 
-    // Grid size slider
     gridSizeSlider.addEventListener('input', () => {
         const size = parseInt(gridSizeSlider.value);
         state.rows = size;
@@ -131,7 +118,6 @@ function updateSpeedLabel() {
     speedValue.textContent = label;
 }
 
-// ─── Mouse Handlers ──────────────────────────
 function onMouseDown(e) {
     if (state.isSolving) return;
     const cell = e.target.closest('.cell');
@@ -147,7 +133,6 @@ function onMouseDown(e) {
     } else if (cell.classList.contains('end')) {
         state.drawMode = 'moveEnd';
     } else if (e.button === 2) {
-        // Right-click: erase
         state.drawMode = 'erase';
         eraseWall(r, c);
     } else {
@@ -181,8 +166,6 @@ function onMouseUp() {
     state.isDrawing = false;
     state.drawMode = null;
 }
-
-// ─── Touch Handlers ──────────────────────────
 function onTouchStart(e) {
     e.preventDefault();
     const touch = e.touches[0];
@@ -228,8 +211,6 @@ function onTouchEnd() {
     state.isDrawing = false;
     state.drawMode = null;
 }
-
-// ─── Wall Operations ─────────────────────────
 function toggleWall(r, c) {
     if (isStartOrEnd(r, c)) return;
     if (state.grid[r][c] === 1) {
@@ -258,9 +239,8 @@ function isStartOrEnd(r, c) {
            (state.end.row === r && state.end.col === c);
 }
 
-// ─── Move Start / End Nodes ──────────────────
 function moveNode(type, r, c) {
-    // Can't move onto a wall or onto the other node
+   
     if (state.grid[r][c] === 1) return;
     if (type === 'start' && state.end.row === r && state.end.col === c) return;
     if (type === 'end' && state.start.row === r && state.start.col === c) return;
@@ -268,17 +248,14 @@ function moveNode(type, r, c) {
     const prev = state[type];
     if (prev.row === r && prev.col === c) return;
 
-    // Clear old position
     getCellEl(prev.row, prev.col).classList.remove(type);
     state.grid[prev.row][prev.col] = 0;
 
-    // Set new position
     state[type] = { row: r, col: c };
     state.grid[r][c] = type === 'start' ? 2 : 3;
     getCellEl(r, c).classList.add(type);
 }
 
-// ─── Solve Maze ──────────────────────────────
 async function solveMaze() {
     if (state.isSolving) return;
 
@@ -333,8 +310,6 @@ async function solveDFS() {
 
         state.stepCount++;
         stepsCount.textContent = state.stepCount;
-
-        // Visualize visited
         if (!(row === start.row && col === start.col) &&
             !(row === end.row && col === end.col)) {
             getCellEl(row, col).classList.add('visited');
@@ -365,7 +340,6 @@ async function solveDFS() {
     if (!found) return null;
     return reconstructPath(parent, start, end);
 }
-
 async function solveBFS() {
     const { rows, cols, start, end, grid } = state;
     const visited = Array.from({ length: rows }, () => Array(cols).fill(false));
@@ -374,7 +348,6 @@ async function solveBFS() {
     const queue = [start];
     visited[start.row][start.col] = true;
     let found = false;
-
     while (queue.length > 0) {
         const current = queue.shift();
         const { row, col } = current;
@@ -410,7 +383,6 @@ async function solveBFS() {
 
     return reconstructPath(parent, start, end);
 }
-
 function reconstructPath(parent, start, end) {
     const path = [];
     let curr = end;
@@ -424,7 +396,6 @@ function reconstructPath(parent, start, end) {
     path.push(start);
     return path.reverse();
 }
-
 async function animatePath(path) {
     for (let i = 0; i < path.length; i++) {
         const { row, col } = path[i];
@@ -595,5 +566,4 @@ function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-// ─── Start ───────────────────────────────────
 document.addEventListener('DOMContentLoaded', init);
